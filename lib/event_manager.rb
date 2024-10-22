@@ -1,5 +1,6 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
+require 'erb'
 
 
 def clean_zipcode(zipcode)
@@ -14,17 +15,11 @@ def legislators_by_zipcode(zip)
 
   begin
     
-    legislators = civic_info.representative_info_by_address(
+    civic_info.representative_info_by_address(
       address: zip,
       levels: 'country',
       roles: ['legislatorUpperBody', 'legislatorLowerBody']
-    )
-
-    legislators = legislators.officials
-
-    legislators_names = legislators.map(&:name)
-
-    legislators_names.join(", ")
+    ).officials
 
   rescue 
 
@@ -40,9 +35,11 @@ contents = CSV.open(
   header_converters: :symbol
   ) 
 
-template_letter = File.read('form_letter.html')
+template_letter = File.read('form_letter.erb')
+erb_template = ERB.new template_letter
 
 contents.each do |row|
+  id = row[0]
   
   name = row[:first_name]
 
@@ -50,8 +47,14 @@ contents.each do |row|
 
   legislators = legislators_by_zipcode(zipcode)
 
-  personal_letter = template_letter.gsub("FIRST_NAME", name)
-  personal_letter.gsub!("LEGISLATORS", legislators)
+  form_letter = erb_template.result(binding)
   
-  puts personal_letter
+  Dir.mkdir('output') unless Dir.exits?('output')
+
+  filename = "ouyput/thanks_#{id}.html"
+
+  File.open(filename, 'w') do |file|
+    file.puts form_letter
+  end
+  
 end
