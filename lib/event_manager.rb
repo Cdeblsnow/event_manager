@@ -31,6 +31,23 @@ end
 
 
 
+def valid_phone_numbers(phone_number)
+
+  phone_number.gsub!(/[^0-9A-Za-z]/, '')
+
+  if phone_number.length == 10
+    phone_number
+
+  elsif phone_number.length == 11 && phone_number.chr == "1"
+   phone_number = phone_number[1..-1]
+   phone_number
+
+  else
+   phone_number = "invalid phone number"
+   
+  end
+end
+
 #def save_thank_you_letter(id,form_letter)
 
  # Dir.mkdir('output') unless Dir.exist?('output')
@@ -61,25 +78,13 @@ contents.each do |row|
 
   zipcode = clean_zipcode(row[:zipcode])
 
-  phone_number = row[:homephone]
-  phone_number.gsub!(/[^0-9A-Za-z]/, '')
+  phone_number = valid_phone_numbers(row[:homephone]) 
+  
 
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
 
-  if phone_number.length == 10
-     phone_number
-
-  elsif phone_number.length == 11 && phone_number.chr == "1"
-    phone_number = phone_number[1..-1]
-    phone_number
-
-  else
-    phone_number = "invalid phone number"
-    
-  end
-  
   puts phone_number
   
   #save_thank_you_letter(id,form_letter)
