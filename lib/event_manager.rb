@@ -31,16 +31,16 @@ end
 
 
 
-def save_thank_you_letter(id,form_letter)
+#def save_thank_you_letter(id,form_letter)
 
-  Dir.mkdir('output') unless Dir.exist?('output')
+ # Dir.mkdir('output') unless Dir.exist?('output')
 
-  filename = "output/thanks_#{id}.html"
+  #filename = "output/thanks_#{id}.html"
 
-  File.open(filename, 'w') do |file|
-    file.puts form_letter
-  end
-end
+  #File.open(filename, 'w') do |file|
+  #  file.puts form_letter
+  #end
+#end
 
 
 puts 'Event Manager initialized!'
@@ -61,12 +61,27 @@ contents.each do |row|
 
   zipcode = clean_zipcode(row[:zipcode])
 
-  phone_number = row[:home_phone]
+  phone_number = row[:homephone]
+  phone_number.gsub!(/[^0-9A-Za-z]/, '')
 
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
+
+  if phone_number.length == 10
+     phone_number
+
+  elsif phone_number.length == 11 && phone_number.chr == "1"
+    phone_number = phone_number[1..-1]
+    phone_number
+
+  else
+    phone_number = "invalid phone number"
+    
+  end
   
-  save_thank_you_letter(id,form_letter)
+  puts phone_number
+  
+  #save_thank_you_letter(id,form_letter)
   
 end
