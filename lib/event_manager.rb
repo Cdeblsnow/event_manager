@@ -62,6 +62,24 @@ def peak_registration_hours(hours)
   peak_hours
 end
 
+def peak_registration_days(day)
+  day_hash = Hash.new(0)
+
+  day.each do |day_of_week|
+    day_hash[day_of_week] += 1
+  end
+
+  peak_days = []
+
+  peak = day_hash.map {|key,value| value}.max
+
+  day_hash.each do |day,registered_users|
+    peak_days.push(day) if registered_users == peak
+  end
+
+  peak_days
+end
+
 #def save_thank_you_letter(id,form_letter)
 
  # Dir.mkdir('output') unless Dir.exist?('output')
@@ -114,18 +132,7 @@ contents.each do |row|
 end
 
 
-day_hash = Hash.new(0)
-  day.each do |day_of_week|
-    day_hash[day_of_week] += 1
-  end
-  peak_days = []
-  peak_day_number = day_hash.map {|key,value| value}.max
-  day_hash.each do |day,registered_users|
-    peak_days.push(day) if registered_users == peak_day_number
-  end
-
-p peak_days
-
-
-#peak_hours = peak_registration_hours(time)
-#puts "Most people registred at #{peak_hours} hrs"
+peak_days = peak_registration_days(day)
+peak_hours = peak_registration_hours(time)
+puts "Most people registred at #{peak_hours} hrs"
+puts "Most people registred the days ##{peak_days} of the week"
