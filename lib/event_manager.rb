@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'time'
 
 
 def clean_zipcode(zipcode)
@@ -71,6 +72,7 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
+time = []
 contents.each do |row|
   id = row[0]
   
@@ -79,14 +81,35 @@ contents.each do |row|
   zipcode = clean_zipcode(row[:zipcode])
 
   phone_number = valid_phone_numbers(row[:homephone]) 
+
+  date_time = Time.strptime(row[:regdate], "%m/%d/%y %k:%M")
+  time.push(date_time.hour)
   
 
   legislators = legislators_by_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
 
-  puts phone_number
+  
   
   #save_thank_you_letter(id,form_letter)
   
 end
+
+hour_arr = Hash.new(0)
+
+time.each do |hour|
+  hour_arr[hour] += 1
+end
+
+peak_hours = []
+peak = hour_arr.map {|key,value| value}.max
+
+hour_arr.each do |hour,registered_users|
+
+peak_hours.push(hour) if registered_users == peak
+
+end
+
+p time
+puts "Most people registred at #{peak_hours} hrs"
