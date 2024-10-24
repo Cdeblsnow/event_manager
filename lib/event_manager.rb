@@ -10,14 +10,11 @@ def clean_zipcode(zipcode)
 end
 
 
-
 def legislators_by_zipcode(zip)
-
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
 
   begin
-    
     civic_info.representative_info_by_address(
       address: zip,
       levels: 'country',
@@ -25,11 +22,9 @@ def legislators_by_zipcode(zip)
     ).officials
 
   rescue 
-
     'You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials'
   end
 end
-
 
 
 def valid_phone_numbers(phone_number)
@@ -45,8 +40,26 @@ def valid_phone_numbers(phone_number)
 
   else
    phone_number = "invalid phone number"
-   
   end
+end
+
+
+def peak_registration_hours(hours)
+  hour_arr = Hash.new(0)
+
+  hours.each do |hour|
+    hour_arr[hour] += 1
+  end
+
+  peak_hours = []
+
+  peak = hour_arr.map {|key,value| value}.max
+
+  hour_arr.each do |hour,registered_users|
+    peak_hours.push(hour) if registered_users == peak
+  end
+  
+  peak_hours
 end
 
 #def save_thank_you_letter(id,form_letter)
@@ -85,6 +98,7 @@ contents.each do |row|
   date_time = Time.strptime(row[:regdate], "%m/%d/%y %k:%M")
   time.push(date_time.hour)
   
+  
 
   legislators = legislators_by_zipcode(zipcode)
 
@@ -96,20 +110,7 @@ contents.each do |row|
   
 end
 
-hour_arr = Hash.new(0)
 
-time.each do |hour|
-  hour_arr[hour] += 1
-end
 
-peak_hours = []
-peak = hour_arr.map {|key,value| value}.max
-
-hour_arr.each do |hour,registered_users|
-
-peak_hours.push(hour) if registered_users == peak
-
-end
-
-p time
+peak_hours = peak_registration_hours(time)
 puts "Most people registred at #{peak_hours} hrs"
