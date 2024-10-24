@@ -45,17 +45,17 @@ end
 
 
 def peak_registration_hours(hours)
-  hour_arr = Hash.new(0)
+  hour_hash = Hash.new(0)
 
   hours.each do |hour|
-    hour_arr[hour] += 1
+    hour_hash[hour] += 1
   end
 
   peak_hours = []
 
-  peak = hour_arr.map {|key,value| value}.max
+  peak = hour_hash.map {|key,value| value}.max
 
-  hour_arr.each do |hour,registered_users|
+  hour_hash.each do |hour,registered_users|
     peak_hours.push(hour) if registered_users == peak
   end
   
@@ -86,6 +86,7 @@ template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
 time = []
+day = []
 contents.each do |row|
   id = row[0]
   
@@ -97,6 +98,8 @@ contents.each do |row|
 
   date_time = Time.strptime(row[:regdate], "%m/%d/%y %k:%M")
   time.push(date_time.hour)
+  day.push(date_time.wday)
+  
   
   
 
@@ -111,6 +114,18 @@ contents.each do |row|
 end
 
 
+day_hash = Hash.new(0)
+  day.each do |day_of_week|
+    day_hash[day_of_week] += 1
+  end
+  peak_days = []
+  peak_day_number = day_hash.map {|key,value| value}.max
+  day_hash.each do |day,registered_users|
+    peak_days.push(day) if registered_users == peak_day_number
+  end
 
-peak_hours = peak_registration_hours(time)
-puts "Most people registred at #{peak_hours} hrs"
+p peak_days
+
+
+#peak_hours = peak_registration_hours(time)
+#puts "Most people registred at #{peak_hours} hrs"
