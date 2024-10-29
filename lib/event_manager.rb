@@ -12,7 +12,7 @@ end
 
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
-  civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
+  civic_info.key = File.read('key.txt').strip
 
   begin
     civic_info.representative_info_by_address(
@@ -80,16 +80,16 @@ def peak_registration_days(day)
   peak_days
 end
 
-#def save_thank_you_letter(id,form_letter)
+def save_thank_you_letter(id,form_letter)
 
- # Dir.mkdir('output') unless Dir.exist?('output')
+ Dir.mkdir('output') unless Dir.exist?('output')
 
-  #filename = "output/thanks_#{id}.html"
+  filename = "output/thanks_#{id}.html"
 
-  #File.open(filename, 'w') do |file|
-  #  file.puts form_letter
-  #end
-#end
+  File.open(filename, 'w') do |file|
+    file.puts form_letter
+  end
+end
 
 
 puts 'Event Manager initialized!'
@@ -127,7 +127,7 @@ contents.each do |row|
 
   
   
-  #save_thank_you_letter(id,form_letter)
+  save_thank_you_letter(id,form_letter)
   
 end
 
@@ -136,3 +136,8 @@ peak_days = peak_registration_days(day)
 peak_hours = peak_registration_hours(time)
 puts "Most people registred at #{peak_hours} hrs"
 puts "Most people registred the days ##{peak_days} of the week"
+
+#remove the # and check everything works
+# look how to use .gitignore
+# commit everything after appliying gitignore
+# push
